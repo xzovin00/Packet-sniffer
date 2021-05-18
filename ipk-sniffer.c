@@ -242,40 +242,6 @@ void print_icmp_packet(const u_char * Buffer , int Size){
     printf("\n");
 }
 
-/*
- * Function for printing ARP 
- * Inspired by: https://www.binarytides.com/packet-sniffer-code-c-libpcap-linux-sockets/
- */
-void print_arp_packet(const u_char * Buffer , int Size){
-	unsigned short iphdrlen;
-	
-	struct iphdr *iph = (struct iphdr *)(Buffer  + sizeof(struct ethhdr));
-	iphdrlen = iph->ihl * 4;
-	struct arphdr *arph = (struct arphdr *)(Buffer + iphdrlen  + sizeof(struct ethhdr));
-
-	int header_size =  sizeof(struct ethhdr) + iphdrlen + sizeof arph;
-
-    struct ethhdr *eth = (struct ethhdr *)Buffer;
-
-    print_time();
-
-    // print source MAC 
-    printf("%.2X-%.2X-%.2X-%.2X-%.2X-%.2X > ", eth->h_source[0] , eth->h_source[1] , eth->h_source[2] , eth->h_source[3] , eth->h_source[4] , eth->h_source[5] );
-
-    // print destination MAC 
-    printf("%.2X-%.2X-%.2X-%.2X-%.2X-%.2X, length %d bytes \n\n",eth->h_dest[0] , eth->h_dest[1] , eth->h_dest[2] , eth->h_dest[3] , eth->h_dest[4] , eth->h_dest[5],   Size);
-
-    // print offset
-    int offset = PrintData(Buffer,iphdrlen, 0);
-
-    // print hexa_bytes 
-    offset = PrintData(Buffer+iphdrlen, sizeof arph, offset);
-
-	//print ascii_bytes
-	offset = PrintData(Buffer + header_size , Size - header_size, offset);
-    printf("\n");
-}
-
 /* Function for processing packets
  * Inspired by: https://www.binarytides.com/packet-sniffer-code-c-libpcap-linux-sockets/
  */
@@ -300,7 +266,6 @@ void process_packet(u_char *args, const struct pcap_pkthdr *header, const u_char
         	break;
 		
 		default:
-            print_arp_packet(buffer, size);
 			break;
 	}
 }
